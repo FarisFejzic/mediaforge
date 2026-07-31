@@ -1,0 +1,7 @@
+spring:
+  config:
+    import: classpath:common.yml
+  application:
+    name: api
+server:
+  port: ${API_PORT:8080}
