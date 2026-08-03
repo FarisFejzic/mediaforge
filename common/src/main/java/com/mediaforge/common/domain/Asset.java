@@ -3,6 +3,8 @@ package com.mediaforge.common.domain;
 
 import com.mediaforge.common.domain.enums.AssetKind;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -30,7 +32,8 @@ public class Asset {
     @Column(name = "size_bytes", nullable = false)
     private Long sizeBytes;
 
-    @Column(name = "metadata_json")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "metadata_json", columnDefinition = "jsonb")
     private String metadataJson;
 
     @Column(name = "created_at", nullable = false)

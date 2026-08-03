@@ -27,6 +27,16 @@ public class User {
 
     protected User(){}
 
+    public static User create(String email, String passwordHash, Role role, OffsetDateTime createdAt) {
+        User user = new User();
+        user.id = UUID.randomUUID();
+        user.email = email;
+        user.passwordHash = passwordHash;
+        user.role = role;
+        user.createdAt = createdAt;
+        return user;
+    }
+
     public UUID getId() {
         return id;
     }
