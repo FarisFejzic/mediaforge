@@ -1,0 +1,7 @@
+package com.mediaforge.api.upload;
+
+public class UnsupportedMediaTypeException extends RuntimeException {
+    public UnsupportedMediaTypeException(String contentType) {
+        super("Unsupported media type: " + contentType);
+    }
+}

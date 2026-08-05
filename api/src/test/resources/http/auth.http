@@ -24,3 +24,15 @@ Content-Type: application/json
   "email": "test@example.com",
   "password": "wrongpassword"
 }
+
+### Upload a file
+POST http://localhost:8080/api/uploads
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyNDNhYWIxMC04ZTAwLTQzZmUtOGU4ZC1hNTVhMGM2MDBiNTciLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4NTk2Njk2MywiZXhwIjoxNzg1OTcwNTYzfQ.xUXG9836OGma-0r7h6st_-wU3bs6OtSQ015weOm7pci1nd6wVZODIt4QCM-uymJRHcZj7BSQhs7OAqP6kwPBeA
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="preview.png
+Content-Type: image/png
+
+< C:\Users\Faris\Desktop\FF\Praksa\preview.png
+--WebAppBoundary--

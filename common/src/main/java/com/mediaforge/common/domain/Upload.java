@@ -41,9 +41,20 @@ public class Upload {
 
     }
 
-    public UUID getId() {
-        return id;
+    public static Upload create(UUID userId, String originalName, MediaType mediaType, Long sizeBytes, String storageKey){
+        Upload upload = new Upload();
+        upload.id = UUID.randomUUID();
+        upload.userId = userId;
+        upload.originalName = originalName;
+        upload.mediaType = mediaType;
+        upload.sizeBytes = sizeBytes;
+        upload.storageKey = storageKey;
+        upload.status = UploadStatus.RECEIVED;
+        upload.createdAt = OffsetDateTime.now();
+        return upload;
     }
+
+    public UUID getId() { return id; }
 
     public void setId(UUID id) {
         this.id = id;
