@@ -10,3 +10,6 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+jwt:
+  secret: ${JWT_SECRET:d1552be79d689a9a2b61fbc8aa81c95d35e3b73e884677ef12cefaffec3bd181}
+  expiration-seconds: ${JWT_EXPIRATION_SECONDS:3600}

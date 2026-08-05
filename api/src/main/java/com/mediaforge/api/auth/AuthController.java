@@ -1,5 +1,7 @@
 package com.mediaforge.api.auth;
 
+import com.mediaforge.api.auth.dto.LoginRequest;
+import com.mediaforge.api.auth.dto.LoginResponse;
 import com.mediaforge.api.auth.dto.RegisterRequest;
 import com.mediaforge.api.auth.dto.UserResponse;
 import jakarta.validation.Valid;
@@ -24,5 +26,11 @@ public class AuthController {
     public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request){
         UserResponse response = authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request){
+        LoginResponse response = authService.login(request);
+        return ResponseEntity.ok(response);
     }
 }
