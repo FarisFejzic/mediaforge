@@ -42,6 +42,20 @@ public class Asset {
     protected Asset(){
     }
 
+    public static Asset create(UUID jobId, UUID uploadId, AssetKind kind, String storageKey, Long sizeBytes, String metadataJson){
+        Asset asset = new Asset();
+        asset.id = UUID.randomUUID();
+        asset.jobId = jobId;
+        asset.uploadId = uploadId;
+        asset.kind = kind;
+        asset.storageKey = storageKey;
+        asset.sizeBytes = sizeBytes;
+        asset.metadataJson = metadataJson;
+        asset.createdAt = OffsetDateTime.now();
+
+        return asset;
+    }
+
     public UUID getId() {
         return id;
     }
