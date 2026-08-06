@@ -52,6 +52,11 @@ public class JobListener {
             return;
         }
 
+        if (job.getStatus() == JobStatus.COMPLETED) {
+            log.info("Job already completed, skipping: {}", jobId);
+            return;
+        }
+
         job.setStatus(JobStatus.PROCESSING);
         job.setStartedAt(OffsetDateTime.now());
         job.setAttempts(job.getAttempts() + 1);
