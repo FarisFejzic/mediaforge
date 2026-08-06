@@ -1,6 +1,7 @@
 package com.mediaforge.api.upload;
 
 import com.mediaforge.api.upload.dto.UploadResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("api/uploads")
+@SecurityRequirement(name = "bearerAuth")
 public class UploadController {
 
     private  final UploadService uploadService;

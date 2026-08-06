@@ -1,8 +1,12 @@
 package com.mediaforge.api.upload;
 
+import com.mediaforge.api.messaging.JobPublisher;
 import com.mediaforge.api.upload.dto.UploadResponse;
+import com.mediaforge.common.domain.Job;
 import com.mediaforge.common.domain.Upload;
+import com.mediaforge.common.domain.enums.JobType;
 import com.mediaforge.common.domain.enums.MediaType;
+import com.mediaforge.common.repository.JobRepository;
 import com.mediaforge.common.repository.UploadRepository;
 import com.mediaforge.common.storage.StorageException;
 import com.mediaforge.common.storage.StorageService;
@@ -17,10 +21,19 @@ public class UploadService {
 
     private final StorageService storageService;
     private final UploadRepository uploadRepository;
+    private final JobRepository jobRepository;
+    private final JobPublisher jobPublisher;
 
-    public UploadService(StorageService storageService, UploadRepository uploadRepository){
+    public UploadService(StorageService storageService,
+                         UploadRepository uploadRepository,
+                         JobRepository jobRepository,
+                         JobPublisher jobPublisher){
         this.storageService = storageService;
         this.uploadRepository = uploadRepository;
+        this.jobRepository = jobRepository;
+        this.jobPublisher = jobPublisher;
+
+
     }
 
     public UploadResponse upload(MultipartFile file, UUID userId) {
@@ -50,6 +63,10 @@ public class UploadService {
         }
 
         Upload saved = uploadRepository.save(upload);
+
+        Job job = Job.create(saved.getId(), JobType.THUMBNAIL);
+        Job savedJob = jobRepository.save(job);
+        jobPublisher.publishThumbnailJob(savedJob.getId());
 
         return new UploadResponse(
                 saved.getId(),

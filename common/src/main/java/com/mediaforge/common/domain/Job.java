@@ -45,6 +45,17 @@ public class Job {
     protected Job(){
     }
 
+    public static Job create(UUID uploadId, JobType type){
+        Job job = new Job();
+        job.id = UUID.randomUUID();
+        job.uploadId = uploadId;
+        job.type = type;
+        job.status = JobStatus.QUEUED;
+        job.attempts = 0;
+        job.maxAttempts = 3;
+        return job;
+    }
+
     public UUID getId() {
         return id;
     }
