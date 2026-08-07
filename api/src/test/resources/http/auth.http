@@ -27,12 +27,53 @@ Content-Type: application/json
 
 ### Upload a file
 POST http://localhost:8080/api/uploads
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyNDNhYWIxMC04ZTAwLTQzZmUtOGU4ZC1hNTVhMGM2MDBiNTciLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4NjA0MTAxMCwiZXhwIjoxNzg2MDQ0NjEwfQ.hLy9MLT_c0cacfkOsUXsyTaPiWXomAC8BftY7niU44-Dj-s7V8_SRmzGveaY4nYjrrEuwHBQ2S-nGP-8fAe-OQ
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyNDNhYWIxMC04ZTAwLTQzZmUtOGU4ZC1hNTVhMGM2MDBiNTciLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4NjA0ODgxOCwiZXhwIjoxNzg2MDUyNDE4fQ.7NAS3JxV89ubBiMIrQaCQiy_EPmuF8KeUwPvtf-qdISOYV-4jVPSVZk5f-seaXnDDuumPdcA2Db88rCAuOL7tQ
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 
 --WebAppBoundary
-Content-Disposition: form-data; name="file"; filename="preview.png
+Content-Disposition: form-data; name="file"; filename=generated (1).png"
 Content-Type: image/png
 
-< C:\Users\Faris\Desktop\FF\Praksa\preview.png
+< C:\Users\Faris\Desktop\FF\Praksa\generated (1).png
 --WebAppBoundary--
+
+### List uploads
+GET http://localhost:8080/api/uploads
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyNDNhYWIxMC04ZTAwLTQzZmUtOGU4ZC1hNTVhMGM2MDBiNTciLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4NjA0ODgxOCwiZXhwIjoxNzg2MDUyNDE4fQ.7NAS3JxV89ubBiMIrQaCQiy_EPmuF8KeUwPvtf-qdISOYV-4jVPSVZk5f-seaXnDDuumPdcA2Db88rCAuOL7tQ
+
+### List uploads - page size 1
+GET http://localhost:8080/api/uploads?size=1
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyNDNhYWIxMC04ZTAwLTQzZmUtOGU4ZC1hNTVhMGM2MDBiNTciLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4NjA0ODgxOCwiZXhwIjoxNzg2MDUyNDE4fQ.7NAS3JxV89ubBiMIrQaCQiy_EPmuF8KeUwPvtf-qdISOYV-4jVPSVZk5f-seaXnDDuumPdcA2Db88rCAuOL7tQ
+
+### Upload detail - owned, has job + asset
+GET http://localhost:8080/api/uploads/dc0c6acf-42bd-445a-ae05-4f08d92b0a3e
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyNDNhYWIxMC04ZTAwLTQzZmUtOGU4ZC1hNTVhMGM2MDBiNTciLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4NjA1NDk2MSwiZXhwIjoxNzg2MDU4NTYxfQ.39DviS4YRDIgWIpjpNWDmIl40CRR0RjrL2YJRHml4hpNDykrlmdScuV8ByGZeyhW3jJdhFkm7aBwTfPA_G5pzw
+
+### Upload detail - random id (should 404)
+GET http://localhost:8080/api/uploads/00000000-0000-0000-0000-000000000000
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyNDNhYWIxMC04ZTAwLTQzZmUtOGU4ZC1hNTVhMGM2MDBiNTciLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4NjA1NDk2MSwiZXhwIjoxNzg2MDU4NTYxfQ.39DviS4YRDIgWIpjpNWDmIl40CRR0RjrL2YJRHml4hpNDykrlmdScuV8ByGZeyhW3jJdhFkm7aBwTfPA_G5pzw
+
+### Upload detail - no token (should 401)
+GET http://localhost:8080/api/uploads/dc0c6acf-42bd-445a-ae05-4f08d92b0a3e
+
+### Job detail - owned
+GET http://localhost:8080/api/jobs/08819ce7-a3ea-4fb3-a33f-5ece2a9a6d7f
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyNDNhYWIxMC04ZTAwLTQzZmUtOGU4ZC1hNTVhMGM2MDBiNTciLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4NjEwMjQxOSwiZXhwIjoxNzg2MTA2MDE5fQ.hJ0FZ-LpsOGWuNJwprHEBgXIBGfg6w-k__XWEHbWPvNkfaaTk3k8W1Ev9q_it4sbUDvVSrZcMzc-yJvStNho8w
+
+### Job detail - random id (404)
+GET http://localhost:8080/api/jobs/00000000-0000-0000-0000-000000000000
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyNDNhYWIxMC04ZTAwLTQzZmUtOGU4ZC1hNTVhMGM2MDBiNTciLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4NjEwMjQxOSwiZXhwIjoxNzg2MTA2MDE5fQ.hJ0FZ-LpsOGWuNJwprHEBgXIBGfg6w-k__XWEHbWPvNkfaaTk3k8W1Ev9q_it4sbUDvVSrZcMzc-yJvStNho8w
+
+### Job detail - no token (401)
+GET http://localhost:8080/api/jobs/08819ce7-a3ea-4fb3-a33f-5ece2a9a6d7f
+
+### Asset download - owned
+GET http://localhost:8080/api/assets/b509fc85-f037-49c0-bb67-0ff0f36d02ce/download
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyNDNhYWIxMC04ZTAwLTQzZmUtOGU4ZC1hNTVhMGM2MDBiNTciLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4NjEwMzAxNywiZXhwIjoxNzg2MTA2NjE3fQ.8cbRElYidCaLQxdJHYeNYw0qagxFCQLbB_UHEp0AP8nD3GXiPIR7YnSJx-e2LIBbeLAjiXgxvKbzCPNRPlBSMg
+
+### Asset download - random id (404)
+GET http://localhost:8080/api/assets/00000000-0000-0000-0000-000000000000/download
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyNDNhYWIxMC04ZTAwLTQzZmUtOGU4ZC1hNTVhMGM2MDBiNTciLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4NjEwMzAxNywiZXhwIjoxNzg2MTA2NjE3fQ.8cbRElYidCaLQxdJHYeNYw0qagxFCQLbB_UHEp0AP8nD3GXiPIR7YnSJx-e2LIBbeLAjiXgxvKbzCPNRPlBSMg
+
+### Asset download - no token (401)
+GET http://localhost:8080/api/assets/b509fc85-f037-49c0-bb67-0ff0f36d02ce/download

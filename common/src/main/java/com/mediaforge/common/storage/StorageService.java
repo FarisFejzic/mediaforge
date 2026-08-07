@@ -9,4 +9,6 @@ public interface StorageService {
     InputStream retrieve(String key);
 
     void delete(String key);
+
+    String presignedGetUrl(String key, int expirySeconds);
 }

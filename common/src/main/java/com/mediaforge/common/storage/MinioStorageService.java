@@ -1,11 +1,13 @@
 package com.mediaforge.common.storage;
 
 import io.minio.*;
+import io.minio.http.Method;
 import jakarta.annotation.PostConstruct;
 import org.bouncycastle.util.StoreException;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class MinioStorageService implements  StorageService{
@@ -70,6 +72,21 @@ public class MinioStorageService implements  StorageService{
                     .build());
         } catch (Exception e) {
             throw new StorageException("Failed to delete object: " + key, e);
+        }
+    }
+
+    @Override
+    public String presignedGetUrl(String key, int expirySeconds) {
+        try {
+            return client.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                            .method(Method.GET)
+                            .bucket(bucket)
+                            .object(key)
+                            .expiry(expirySeconds, TimeUnit.SECONDS)
+                            .build());
+        } catch (Exception e) {
+            throw new StorageException("Failed to presign object: " + key, e);
         }
     }
 }

@@ -1,14 +1,14 @@
 package com.mediaforge.api.upload;
 
+import com.mediaforge.api.upload.dto.UploadDetailResponse;
 import com.mediaforge.api.upload.dto.UploadResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
@@ -31,6 +31,22 @@ public class UploadController {
         UUID userId = UUID.fromString(authentication.getName());
         UploadResponse response = uploadService.upload(file,userId);
         return  ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping
+    public Page<UploadResponse> list(
+            Pageable pageable,
+            Authentication authentication) {
+        UUID userId = UUID.fromString(authentication.getName());
+        return uploadService.list(userId, pageable);
+    }
+
+    @GetMapping("/{id}")
+    public UploadDetailResponse getDetail(
+            @PathVariable UUID id,
+            Authentication authentication) {
+        UUID userId = UUID.fromString(authentication.getName());
+        return uploadService.getDetail(id, userId);
     }
 
 }
