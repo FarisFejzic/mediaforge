@@ -28,3 +28,7 @@ mediaforge:
     exchange: ${RABBITMQ_EXCHANGE:mediaforge.jobs}
     thumbnail-queue: ${RABBITMQ_THUMBNAIL_QUEUE:jobs.thumbnail}
     thumbnail-routing-key: ${RABBITMQ_THUMBNAIL_ROUTING_KEY:job.thumbnail}
+    poster-queue: ${RABBITMQ_POSTER_QUEUE:jobs.poster}
+    poster-routing-key: ${RABBITMQ_POSTER_ROUTING_KEY:job.poster}
+    metadata-queue: ${RABBITMQ_METADATA_QUEUE:jobs.metadata}
+    metadata-routing-key: ${RABBITMQ_METADATA_ROUTING_KEY:job.metadata}

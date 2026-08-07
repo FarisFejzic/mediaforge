@@ -21,37 +21,57 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 @Component
 public class JobListener {
 
     private static final Logger log = LoggerFactory.getLogger(JobListener.class);
+
     private final JobRepository jobRepository;
-    private final UploadRepository uploadRepository;
-    private final AssetRepository assetRepository;
-    private final StorageService storageService;
+    private final ThumbnailProcessor thumbnailProcessor;
+    private final PosterProcessor posterProcessor;
+    private final MetadataProcessor metadataProcessor;
 
     public JobListener(JobRepository jobRepository,
-                       UploadRepository uploadRepository,
-                       AssetRepository assetRepository,
-                       StorageService storageService) {
+                       ThumbnailProcessor thumbnailProcessor,
+                       PosterProcessor posterProcessor,
+                       MetadataProcessor metadataProcessor) {
         this.jobRepository = jobRepository;
-        this.uploadRepository = uploadRepository;
-        this.assetRepository = assetRepository;
-        this.storageService = storageService;
+        this.thumbnailProcessor = thumbnailProcessor;
+        this.posterProcessor = posterProcessor;
+        this.metadataProcessor = metadataProcessor;
     }
 
     @RabbitListener(queues = "${mediaforge.rabbitmq.thumbnail-queue}")
-    public void handleThumbnailJob(JobMessage message) {
-        UUID jobId = message.jobId();
-        log.info("Processing thumbnail job: {}", jobId);
+    public void handleThumbnail(JobMessage message) {
+        runJob(message.jobId(), job -> {
+            try { thumbnailProcessor.process(job.getId(), job.getUploadId()); }
+            catch (Exception e) { throw new RuntimeException(e); }
+        });
+    }
+
+    @RabbitListener(queues = "${mediaforge.rabbitmq.poster-queue}")
+    public void handlePoster(JobMessage message) {
+        runJob(message.jobId(), job ->
+                posterProcessor.process(job.getId(), job.getUploadId()));
+    }
+
+    @RabbitListener(queues = "${mediaforge.rabbitmq.metadata-queue}")
+    public void handleMetadata(JobMessage message) {
+        runJob(message.jobId(), job ->
+                metadataProcessor.process(job.getId(), job.getUploadId()));
+    }
+
+    /** Shared status lifecycle around any processor. */
+    private void runJob(UUID jobId, Consumer<Job> processor) {
+        log.info("Processing job: {}", jobId);
 
         Job job = jobRepository.findById(jobId).orElse(null);
         if (job == null) {
             log.warn("Job not found, discarding: {}", jobId);
             return;
         }
-
         if (job.getStatus() == JobStatus.COMPLETED) {
             log.info("Job already completed, skipping: {}", jobId);
             return;
@@ -63,47 +83,13 @@ public class JobListener {
         jobRepository.save(job);
 
         try {
-            Upload upload = uploadRepository.findById(job.getUploadId())
-                    .orElseThrow(() -> new IllegalStateException(
-                            "Upload not found: " + job.getUploadId()));
-
-            byte[] thumbnailBytes;
-            try (InputStream original = storageService.retrieve(upload.getStorageKey())) {
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                Thumbnails.of(original)
-                        .size(200, 200)
-                        .outputFormat("jpg")
-                        .toOutputStream(out);
-                thumbnailBytes = out.toByteArray();
-            }
-
-            String thumbnailKey = "thumbnails/" + upload.getId() + "/" + jobId + ".jpg";
-
-            storageService.store(
-                    thumbnailKey,
-                    new ByteArrayInputStream(thumbnailBytes),
-                    thumbnailBytes.length,
-                    "image/jpeg"
-            );
-
-            Asset asset = Asset.create(
-                    jobId,
-                    upload.getId(),
-                    AssetKind.THUMBNAIL,
-                    thumbnailKey,
-                    (long) thumbnailBytes.length,
-                    null
-            );
-            assetRepository.save(asset);
-
+            processor.accept(job);
             job.setStatus(JobStatus.COMPLETED);
             job.setFinishedAt(OffsetDateTime.now());
             jobRepository.save(job);
-
-            log.info("Completed thumbnail job: {}", jobId);
-
+            log.info("Completed job: {}", jobId);
         } catch (Exception e) {
-            log.error("Thumbnail job failed: {}", jobId, e);
+            log.error("Job failed: {}", jobId, e);
             job.setStatus(JobStatus.FAILED);
             job.setError(e.getMessage());
             job.setFinishedAt(OffsetDateTime.now());

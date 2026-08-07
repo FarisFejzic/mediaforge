@@ -75,9 +75,23 @@ public class UploadService {
 
         Upload saved = uploadRepository.save(upload);
 
-        Job job = Job.create(saved.getId(), JobType.THUMBNAIL);
-        Job savedJob = jobRepository.save(job);
-        jobPublisher.publishThumbnailJob(savedJob.getId());
+        switch (mediaType) {
+            case IMAGE -> {
+                Job job = Job.create(saved.getId(), JobType.THUMBNAIL);
+                jobRepository.save(job);
+                jobPublisher.publishThumbnailJob(job.getId());
+            }
+            case VIDEO -> {
+                Job job = Job.create(saved.getId(), JobType.POSTER);
+                jobRepository.save(job);
+                jobPublisher.publishPosterJob(job.getId());
+            }
+            case AUDIO -> {
+                Job job = Job.create(saved.getId(), JobType.METADATA);
+                jobRepository.save(job);
+                jobPublisher.publishMetadataJob(job.getId());
+            }
+        }
 
         return new UploadResponse(
                 saved.getId(),

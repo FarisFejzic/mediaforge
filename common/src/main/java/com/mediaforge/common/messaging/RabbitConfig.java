@@ -40,4 +40,30 @@ public class RabbitConfig {
     public MessageConverter jsonMessageConverter(){
         return new JacksonJsonMessageConverter();
     }
+
+    @Bean
+    public Queue posterQueue() {
+        return new Queue(properties.posterQueue(), true);
+    }
+
+    @Bean
+    public Binding posterBinding() {
+        return BindingBuilder
+                .bind(posterQueue())
+                .to(jobsExchange())
+                .with(properties.posterRoutingKey());
+    }
+
+    @Bean
+    public Queue metadataQueue() {
+        return new Queue(properties.metadataQueue(), true);
+    }
+
+    @Bean
+    public Binding metadataBinding() {
+        return BindingBuilder
+                .bind(metadataQueue())
+                .to(jobsExchange())
+                .with(properties.metadataRoutingKey());
+    }
 }

@@ -6,6 +6,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record RabbitProperties(
         String exchange,
         String thumbnailQueue,
-        String thumbnailRoutingKey
+        String thumbnailRoutingKey,
+        String posterQueue,
+        String posterRoutingKey,
+        String metadataQueue,
+        String metadataRoutingKey
 ) {
 }

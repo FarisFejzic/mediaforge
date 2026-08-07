@@ -24,4 +24,20 @@ public class JobPublisher {
                 properties.thumbnailRoutingKey(),
                 new JobMessage(jobId));
     }
+
+    public void publishPosterJob(UUID jobId) {
+        rabbitTemplate.convertAndSend(
+                properties.exchange(),
+                properties.posterRoutingKey(),
+                new JobMessage(jobId)
+        );
+    }
+
+    public void publishMetadataJob(UUID jobId) {
+        rabbitTemplate.convertAndSend(
+                properties.exchange(),
+                properties.metadataRoutingKey(),
+                new JobMessage(jobId)
+        );
+    }
 }
