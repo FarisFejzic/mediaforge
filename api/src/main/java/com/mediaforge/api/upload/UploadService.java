@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 @Service
 public class UploadService {
@@ -77,19 +78,24 @@ public class UploadService {
 
         switch (mediaType) {
             case IMAGE -> {
-                Job job = Job.create(saved.getId(), JobType.THUMBNAIL);
-                jobRepository.save(job);
-                jobPublisher.publishThumbnailJob(job.getId());
+                createAndPublish(saved.getId(), JobType.THUMBNAIL,
+                        jobPublisher::publishThumbnailJob);
             }
             case VIDEO -> {
-                Job job = Job.create(saved.getId(), JobType.POSTER);
-                jobRepository.save(job);
-                jobPublisher.publishPosterJob(job.getId());
+                createAndPublish(saved.getId(), JobType.POSTER,
+                        jobPublisher::publishPosterJob);
+                createAndPublish(saved.getId(), JobType.TRANSCODE,
+                        jobPublisher::publishTranscodeJob);
+                createAndPublish(saved.getId(), JobType.PREVIEW,
+                        jobPublisher::publishPreviewJob);
             }
             case AUDIO -> {
-                Job job = Job.create(saved.getId(), JobType.METADATA);
-                jobRepository.save(job);
-                jobPublisher.publishMetadataJob(job.getId());
+                createAndPublish(saved.getId(), JobType.METADATA,
+                        jobPublisher::publishMetadataJob);
+                createAndPublish(saved.getId(), JobType.WAVEFORM,
+                        jobPublisher::publishWaveformJob);
+                createAndPublish(saved.getId(), JobType.AUDIO_TRANSCODE,
+                        jobPublisher::publishAudioTranscodeJob);
             }
         }
 
@@ -181,5 +187,11 @@ public class UploadService {
                 jobs,
                 assets
         );
+    }
+
+    private void createAndPublish(UUID uploadId, JobType type, Consumer<UUID> publish) {
+        Job job = Job.create(uploadId, type);
+        jobRepository.save(job);
+        publish.accept(job.getId());
     }
 }

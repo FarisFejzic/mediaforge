@@ -32,15 +32,27 @@ public class JobListener {
     private final ThumbnailProcessor thumbnailProcessor;
     private final PosterProcessor posterProcessor;
     private final MetadataProcessor metadataProcessor;
+    private final VideoTranscodeProcessor videoTranscodeProcessor;
+    private final  PreviewProcessor previewProcessor;
+    private final WaveformProcessor waveformProcessor;
+    private final AudioTranscodeProcessor audioTranscodeProcessor;
 
     public JobListener(JobRepository jobRepository,
                        ThumbnailProcessor thumbnailProcessor,
                        PosterProcessor posterProcessor,
-                       MetadataProcessor metadataProcessor) {
+                       MetadataProcessor metadataProcessor,
+                       VideoTranscodeProcessor videoTranscodeProcessor,
+                       PreviewProcessor previewProcessor,
+                       WaveformProcessor waveformProcessor,
+                       AudioTranscodeProcessor audioTranscodeProcessor) {
         this.jobRepository = jobRepository;
         this.thumbnailProcessor = thumbnailProcessor;
         this.posterProcessor = posterProcessor;
         this.metadataProcessor = metadataProcessor;
+        this.videoTranscodeProcessor = videoTranscodeProcessor;
+        this.previewProcessor = previewProcessor;
+        this.waveformProcessor = waveformProcessor;
+        this.audioTranscodeProcessor = audioTranscodeProcessor;
     }
 
     @RabbitListener(queues = "${mediaforge.rabbitmq.thumbnail-queue}")
@@ -95,5 +107,29 @@ public class JobListener {
             job.setFinishedAt(OffsetDateTime.now());
             jobRepository.save(job);
         }
+    }
+
+    @RabbitListener(queues = "${mediaforge.rabbitmq.transcode-queue}")
+    public void handleTranscode(JobMessage message) {
+        runJob(message.jobId(), job ->
+                videoTranscodeProcessor.process(job.getId(), job.getUploadId()));
+    }
+
+    @RabbitListener(queues = "${mediaforge.rabbitmq.preview-queue}")
+    public void handlePreview(JobMessage message) {
+        runJob(message.jobId(), job ->
+                previewProcessor.process(job.getId(), job.getUploadId()));
+    }
+
+    @RabbitListener(queues = "${mediaforge.rabbitmq.waveform-queue}")
+    public void handleWaveform(JobMessage message) {
+        runJob(message.jobId(), job ->
+                waveformProcessor.process(job.getId(), job.getUploadId()));
+    }
+
+    @RabbitListener(queues = "${mediaforge.rabbitmq.audio-transcode-queue}")
+    public void handleAudioTranscode(JobMessage message) {
+        runJob(message.jobId(), job ->
+                audioTranscodeProcessor.process(job.getId(), job.getUploadId()));
     }
 }

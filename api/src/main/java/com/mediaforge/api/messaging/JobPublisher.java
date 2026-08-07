@@ -40,4 +40,24 @@ public class JobPublisher {
                 new JobMessage(jobId)
         );
     }
+
+    public void publishTranscodeJob(UUID jobId) {
+        rabbitTemplate.convertAndSend(properties.exchange(),
+                properties.transcodeRoutingKey(), new JobMessage(jobId));
+    }
+
+    public void publishPreviewJob(UUID jobId) {
+        rabbitTemplate.convertAndSend(properties.exchange(),
+                properties.previewRoutingKey(), new JobMessage(jobId));
+    }
+
+    public void publishWaveformJob(UUID jobId) {
+        rabbitTemplate.convertAndSend(properties.exchange(),
+                properties.waveformRoutingKey(), new JobMessage(jobId));
+    }
+
+    public void publishAudioTranscodeJob(UUID jobId) {
+        rabbitTemplate.convertAndSend(properties.exchange(),
+                properties.audioTranscodeRoutingKey(), new JobMessage(jobId));
+    }
 }

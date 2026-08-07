@@ -10,6 +10,14 @@ public record RabbitProperties(
         String posterQueue,
         String posterRoutingKey,
         String metadataQueue,
-        String metadataRoutingKey
+        String metadataRoutingKey,
+        String transcodeQueue,
+        String transcodeRoutingKey,
+        String previewQueue,
+        String previewRoutingKey,
+        String waveformQueue,
+        String waveformRoutingKey,
+        String audioTranscodeQueue,
+        String audioTranscodeRoutingKey
 ) {
 }

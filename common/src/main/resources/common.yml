@@ -32,3 +32,11 @@ mediaforge:
     poster-routing-key: ${RABBITMQ_POSTER_ROUTING_KEY:job.poster}
     metadata-queue: ${RABBITMQ_METADATA_QUEUE:jobs.metadata}
     metadata-routing-key: ${RABBITMQ_METADATA_ROUTING_KEY:job.metadata}
+    transcode-queue: ${RABBITMQ_TRANSCODE_QUEUE:jobs.transcode}
+    transcode-routing-key: ${RABBITMQ_TRANSCODE_ROUTING_KEY:job.transcode}
+    preview-queue: ${RABBITMQ_PREVIEW_QUEUE:jobs.preview}
+    preview-routing-key: ${RABBITMQ_PREVIEW_ROUTING_KEY:job.preview}
+    waveform-queue: ${RABBITMQ_WAVEFORM_QUEUE:jobs.waveform}
+    waveform-routing-key: ${RABBITMQ_WAVEFORM_ROUTING_KEY:job.waveform}
+    audio-transcode-queue: ${RABBITMQ_AUDIO_TRANSCODE_QUEUE:jobs.audio-transcode}
+    audio-transcode-routing-key: ${RABBITMQ_AUDIO_TRANSCODE_ROUTING_KEY:job.audio-transcode}

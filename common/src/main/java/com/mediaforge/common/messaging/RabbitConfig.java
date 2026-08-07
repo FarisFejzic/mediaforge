@@ -66,4 +66,48 @@ public class RabbitConfig {
                 .to(jobsExchange())
                 .with(properties.metadataRoutingKey());
     }
+
+    @Bean
+    public Queue transcodeQueue() {
+        return new Queue(properties.transcodeQueue(), true);
+    }
+
+    @Bean
+    public Binding transcodeBinding() {
+        return BindingBuilder.bind(transcodeQueue()).to(jobsExchange())
+                .with(properties.transcodeRoutingKey());
+    }
+
+    @Bean
+    public Queue previewQueue() {
+        return new Queue(properties.previewQueue(), true);
+    }
+
+    @Bean
+    public Binding previewBinding() {
+        return BindingBuilder.bind(previewQueue()).to(jobsExchange())
+                .with(properties.previewRoutingKey());
+    }
+
+    @Bean
+    public Queue waveformQueue() {
+        return new Queue(properties.waveformQueue(), true);
+    }
+
+    @Bean
+    public Binding waveformBinding() {
+        return BindingBuilder.bind(waveformQueue()).to(jobsExchange())
+                .with(properties.waveformRoutingKey());
+    }
+
+    @Bean
+    public Queue audioTranscodeQueue() {
+        return new Queue(properties.audioTranscodeQueue(), true);
+    }
+
+    @Bean
+    public Binding audioTranscodeBinding() {
+        return BindingBuilder.bind(audioTranscodeQueue()).to(jobsExchange())
+                .with(properties.audioTranscodeRoutingKey());
+    }
 }
