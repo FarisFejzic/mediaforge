@@ -62,7 +62,7 @@ public class PosterProcessor {
             CommandResult result = ffmpegRunner.run(command);
             if (!result.isSuccess()) {
                 throw new FfmpegException("ffmpeg poster failed (exit "
-                        + result.exitCode() + "): " + result.stderr());
+                        + result.exitCode() + "): " + result.stderrTail());
             }
 
             // 4. read the frame back, store it

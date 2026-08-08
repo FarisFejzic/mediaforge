@@ -58,7 +58,7 @@ public class MetadataProcessor {
             CommandResult result = ffmpegRunner.run(command);
             if (!result.isSuccess()) {
                 throw new FfmpegException("ffprobe failed (exit "
-                        + result.exitCode() + "): " + result.stderr());
+                        + result.exitCode() + "): " + result.stderrTail());
             }
 
             String metadataJson = result.stdout();

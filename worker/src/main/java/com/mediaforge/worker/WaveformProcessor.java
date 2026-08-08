@@ -59,7 +59,7 @@ public class WaveformProcessor {
             CommandResult result = ffmpegRunner.run(command);
             if (!result.isSuccess()) {
                 throw new FfmpegException("ffmpeg waveform failed (exit "
-                        + result.exitCode() + "): " + result.stderr());
+                        + result.exitCode() + "): " + result.stderrTail());
             }
 
             byte[] waveformBytes = Files.readAllBytes(output);

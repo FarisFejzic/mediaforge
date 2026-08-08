@@ -63,7 +63,7 @@ public class VideoTranscodeProcessor {
             CommandResult result = ffmpegRunner.run(command);
             if (!result.isSuccess()) {
                 throw new FfmpegException("ffmpeg transcode failed (exit "
-                        + result.exitCode() + "): " + result.stderr());
+                        + result.exitCode() + "): " + result.stderrTail());
             }
 
             byte[] transcodedBytes = Files.readAllBytes(output);

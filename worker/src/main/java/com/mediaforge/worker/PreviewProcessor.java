@@ -64,7 +64,7 @@ public class PreviewProcessor {
             CommandResult result = ffmpegRunner.run(command);
             if (!result.isSuccess()) {
                 throw new FfmpegException("ffmpeg preview failed (exit "
-                        + result.exitCode() + "): " + result.stderr());
+                        + result.exitCode() + "): " + result.stderrTail());
             }
 
             byte[] previewBytes = Files.readAllBytes(output);
