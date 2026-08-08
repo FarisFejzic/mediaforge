@@ -15,6 +15,15 @@ spring:
     port: ${RABBITMQ_PORT:5672}
     username: ${RABBITMQ_USER:mediaforge}
     password: ${RABBITMQ_PASSWORD:mediaforge}
+    listener:
+      simple:
+        default-requeue-rejected: false
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 2000
+          multiplier: 2
+          max-interval: 10000
 jwt:
   secret: ${JWT_SECRET:d1552be79d689a9a2b61fbc8aa81c95d35e3b73e884677ef12cefaffec3bd181}
   expiration-seconds: ${JWT_EXPIRATION_SECONDS:3600}
@@ -40,3 +49,6 @@ mediaforge:
     waveform-routing-key: ${RABBITMQ_WAVEFORM_ROUTING_KEY:job.waveform}
     audio-transcode-queue: ${RABBITMQ_AUDIO_TRANSCODE_QUEUE:jobs.audio-transcode}
     audio-transcode-routing-key: ${RABBITMQ_AUDIO_TRANSCODE_ROUTING_KEY:job.audio-transcode}
+    dead-letter-exchange: ${RABBITMQ_DLX:mediaforge.jobs.dlx}
+    dead-letter-queue: ${RABBITMQ_DLQ:jobs.dead-letter}
+    dead-letter-routing-key: ${RABBITMQ_DLQ_ROUTING_KEY:job.dead-letter}

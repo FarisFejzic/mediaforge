@@ -8,8 +8,11 @@ import com.mediaforge.common.domain.enums.JobStatus;
 import com.mediaforge.common.repository.AssetRepository;
 import com.mediaforge.common.repository.JobRepository;
 import com.mediaforge.common.repository.UploadRepository;
+import com.mediaforge.common.storage.StorageException;
 import com.mediaforge.common.storage.StorageService;
+import com.mediaforge.worker.ffmpeg.FfmpegException;
 import net.coobird.thumbnailator.Thumbnails;
+import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,12 +104,38 @@ public class JobListener {
             jobRepository.save(job);
             log.info("Completed job: {}", jobId);
         } catch (Exception e) {
-            log.error("Job failed: {}", jobId, e);
-            job.setStatus(JobStatus.FAILED);
-            job.setError(e.getMessage());
-            job.setFinishedAt(OffsetDateTime.now());
-            jobRepository.save(job);
+            if (isPermanent(e)) {
+                log.error("Job failed (permanent): {}", jobId, e);
+                markFailed(job, e);
+                throw new AmqpRejectAndDontRequeueException("Permanent failure: " + jobId, e);
+            }
+            boolean lastAttempt = job.getAttempts() >= job.getMaxAttempts();
+            if (lastAttempt) {
+                log.error("Job failed (transient, exhausted): {}", jobId, e);
+                markFailed(job, e);
+            } else {
+                log.warn("Job failed (transient), retry {}/{}: {}",
+                        job.getAttempts(), job.getMaxAttempts(), jobId, e);
+            }
+            throw new RuntimeException("Transient failure: " + jobId, e);
         }
+    }
+
+    private void markFailed(Job job, Throwable e) {
+        job.setStatus(JobStatus.FAILED);
+        job.setError(e.getMessage());
+        job.setFinishedAt(OffsetDateTime.now());
+        jobRepository.save(job);
+    }
+
+    private boolean isPermanent(Throwable e) {
+        Throwable cause = e;
+        while (cause != null) {
+            if (cause instanceof FfmpegException) return true;
+            if (cause instanceof StorageException) return false;
+            cause = cause.getCause();
+        }
+        return true; // unknown → treat as permanent (don't retry-loop)
     }
 
     @RabbitListener(queues = "${mediaforge.rabbitmq.transcode-queue}")

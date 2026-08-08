@@ -27,14 +27,14 @@ Content-Type: application/json
 
 ### Upload a file
 POST http://localhost:8080/api/uploads
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyNDNhYWIxMC04ZTAwLTQzZmUtOGU4ZC1hNTVhMGM2MDBiNTciLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4NjA0ODgxOCwiZXhwIjoxNzg2MDUyNDE4fQ.7NAS3JxV89ubBiMIrQaCQiy_EPmuF8KeUwPvtf-qdISOYV-4jVPSVZk5f-seaXnDDuumPdcA2Db88rCAuOL7tQ
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyNDNhYWIxMC04ZTAwLTQzZmUtOGU4ZC1hNTVhMGM2MDBiNTciLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4NjE0MTMwNSwiZXhwIjoxNzg2MTQ0OTA1fQ.RJT54RArWguStl60ZcFbe2zdYAbGFJ-4ciS8rW7hkMKTfb4E1LOEtCGe3hiKlJzCcu1-ooMhiEn6F3ggHeccvQ
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 
 --WebAppBoundary
-Content-Disposition: form-data; name="file"; filename=generated (1).png"
+Content-Disposition: form-data; name="file"; filename=cropped_image.png"
 Content-Type: image/png
 
-< C:\Users\Faris\Desktop\FF\Praksa\generated (1).png
+< C:\Users\Faris\Desktop\FF\Praksa\cropped_image.png
 --WebAppBoundary--
 
 ### List uploads
@@ -101,3 +101,23 @@ Content-Type: audio/mpeg
 
 < C:/Users/Faris/Desktop/test-audio.mp3
 --WebAppBoundary--
+
+### Upload fake video (should fail → DLQ)
+POST http://localhost:8080/api/uploads
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyNDNhYWIxMC04ZTAwLTQzZmUtOGU4ZC1hNTVhMGM2MDBiNTciLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4NjE0MTMwNSwiZXhwIjoxNzg2MTQ0OTA1fQ.RJT54RArWguStl60ZcFbe2zdYAbGFJ-4ciS8rW7hkMKTfb4E1LOEtCGe3hiKlJzCcu1-ooMhiEn6F3ggHeccvQ
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="fake.mp4"
+Content-Type: video/mp4
+
+< C:/Users/Faris/Desktop/fake.mp4
+--WebAppBoundary--
+
+### Retry a failed job
+POST http://localhost:8080/api/jobs/2bfcd0c5-1f91-41d7-8094-64b0da33279b/retry
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyNDNhYWIxMC04ZTAwLTQzZmUtOGU4ZC1hNTVhMGM2MDBiNTciLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4NjIwNjUwMCwiZXhwIjoxNzg2MjEwMTAwfQ.K530mgu_mGXo42ddXlEyq9HnLiC_J_AEbVOfALvnXp_440q46Dgsofm_DpK1JZa8nwkNE-F7bGyrpD0wewR_1A
+
+### Retry a COMPLETED job (should 409)
+POST http://localhost:8080/api/jobs/556d1e8c-806b-4e75-a828-d7c74ee20678/retry
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyNDNhYWIxMC04ZTAwLTQzZmUtOGU4ZC1hNTVhMGM2MDBiNTciLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4NjIwNjUwMCwiZXhwIjoxNzg2MjEwMTAwfQ.K530mgu_mGXo42ddXlEyq9HnLiC_J_AEbVOfALvnXp_440q46Dgsofm_DpK1JZa8nwkNE-F7bGyrpD0wewR_1A

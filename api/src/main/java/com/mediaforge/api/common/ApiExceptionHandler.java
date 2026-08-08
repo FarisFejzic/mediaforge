@@ -4,6 +4,7 @@ import com.mediaforge.api.asset.AssetNotFoundException;
 import com.mediaforge.api.auth.EmailAlreadyExistsException;
 import com.mediaforge.api.auth.InvalidCredentialsException;
 import com.mediaforge.api.job.JobNotFoundException;
+import com.mediaforge.api.job.JobNotRetryableException;
 import com.mediaforge.api.upload.UnsupportedMediaTypeException;
 import com.mediaforge.api.upload.UploadNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -59,5 +60,10 @@ public class ApiExceptionHandler {
     @ExceptionHandler(AssetNotFoundException.class)
     public ProblemDetail handleAssetNotFound(AssetNotFoundException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(JobNotRetryableException.class)
+    public ProblemDetail handleJobNotRetryable(JobNotRetryableException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
     }
 }

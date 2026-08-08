@@ -18,6 +18,9 @@ public record RabbitProperties(
         String waveformQueue,
         String waveformRoutingKey,
         String audioTranscodeQueue,
-        String audioTranscodeRoutingKey
+        String audioTranscodeRoutingKey,
+        String deadLetterExchange,
+        String deadLetterQueue,
+        String deadLetterRoutingKey
 ) {
 }

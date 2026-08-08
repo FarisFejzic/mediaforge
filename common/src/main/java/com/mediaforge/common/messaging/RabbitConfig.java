@@ -1,9 +1,6 @@
 package com.mediaforge.common.messaging;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +22,7 @@ public class RabbitConfig {
 
     @Bean
     public Queue thumbnailQueue(){
-        return new Queue(properties.thumbnailQueue(),true);
+        return workQueue(properties.thumbnailQueue());
     }
 
     @Bean
@@ -43,7 +40,7 @@ public class RabbitConfig {
 
     @Bean
     public Queue posterQueue() {
-        return new Queue(properties.posterQueue(), true);
+        return workQueue(properties.posterQueue());
     }
 
     @Bean
@@ -56,7 +53,7 @@ public class RabbitConfig {
 
     @Bean
     public Queue metadataQueue() {
-        return new Queue(properties.metadataQueue(), true);
+        return workQueue(properties.metadataQueue());
     }
 
     @Bean
@@ -69,7 +66,7 @@ public class RabbitConfig {
 
     @Bean
     public Queue transcodeQueue() {
-        return new Queue(properties.transcodeQueue(), true);
+        return workQueue(properties.transcodeQueue());
     }
 
     @Bean
@@ -80,7 +77,7 @@ public class RabbitConfig {
 
     @Bean
     public Queue previewQueue() {
-        return new Queue(properties.previewQueue(), true);
+        return workQueue(properties.previewQueue());
     }
 
     @Bean
@@ -91,7 +88,7 @@ public class RabbitConfig {
 
     @Bean
     public Queue waveformQueue() {
-        return new Queue(properties.waveformQueue(), true);
+        return workQueue(properties.waveformQueue());
     }
 
     @Bean
@@ -102,12 +99,36 @@ public class RabbitConfig {
 
     @Bean
     public Queue audioTranscodeQueue() {
-        return new Queue(properties.audioTranscodeQueue(), true);
+        return workQueue(properties.audioTranscodeQueue());
     }
 
     @Bean
     public Binding audioTranscodeBinding() {
         return BindingBuilder.bind(audioTranscodeQueue()).to(jobsExchange())
                 .with(properties.audioTranscodeRoutingKey());
+    }
+
+    @Bean
+    public DirectExchange deadLetterExchange() {
+        return new DirectExchange(properties.deadLetterExchange());
+    }
+
+    @Bean
+    public Queue deadLetterQueue() {
+        return new Queue(properties.deadLetterQueue(), true);
+    }
+
+    @Bean
+    public Binding deadLetterBinding() {
+        return BindingBuilder.bind(deadLetterQueue())
+                .to(deadLetterExchange())
+                .with(properties.deadLetterRoutingKey());
+    }
+
+    private Queue workQueue(String name) {
+        return QueueBuilder.durable(name)
+                .withArgument("x-dead-letter-exchange", properties.deadLetterExchange())
+                .withArgument("x-dead-letter-routing-key", properties.deadLetterRoutingKey())
+                .build();
     }
 }
