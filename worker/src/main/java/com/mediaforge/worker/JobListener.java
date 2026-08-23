@@ -39,6 +39,7 @@ public class JobListener {
     private final  PreviewProcessor previewProcessor;
     private final WaveformProcessor waveformProcessor;
     private final AudioTranscodeProcessor audioTranscodeProcessor;
+    private final JobStatusPublisher jobStatusPublisher;
 
     public JobListener(JobRepository jobRepository,
                        ThumbnailProcessor thumbnailProcessor,
@@ -47,7 +48,8 @@ public class JobListener {
                        VideoTranscodeProcessor videoTranscodeProcessor,
                        PreviewProcessor previewProcessor,
                        WaveformProcessor waveformProcessor,
-                       AudioTranscodeProcessor audioTranscodeProcessor) {
+                       AudioTranscodeProcessor audioTranscodeProcessor,
+                       JobStatusPublisher jobStatusPublisher) {
         this.jobRepository = jobRepository;
         this.thumbnailProcessor = thumbnailProcessor;
         this.posterProcessor = posterProcessor;
@@ -56,6 +58,7 @@ public class JobListener {
         this.previewProcessor = previewProcessor;
         this.waveformProcessor = waveformProcessor;
         this.audioTranscodeProcessor = audioTranscodeProcessor;
+        this.jobStatusPublisher = jobStatusPublisher;
     }
 
     @RabbitListener(queues = "${mediaforge.rabbitmq.thumbnail-queue}")
@@ -96,12 +99,14 @@ public class JobListener {
         job.setStartedAt(OffsetDateTime.now());
         job.setAttempts(job.getAttempts() + 1);
         jobRepository.save(job);
+        jobStatusPublisher.publish(job);
 
         try {
             processor.accept(job);
             job.setStatus(JobStatus.COMPLETED);
             job.setFinishedAt(OffsetDateTime.now());
             jobRepository.save(job);
+            jobStatusPublisher.publish(job);
             log.info("Completed job: {}", jobId);
         } catch (Exception e) {
             if (isPermanent(e)) {
@@ -126,6 +131,7 @@ public class JobListener {
         job.setError(e.getMessage());
         job.setFinishedAt(OffsetDateTime.now());
         jobRepository.save(job);
+        jobStatusPublisher.publish(job);
     }
 
     private boolean isPermanent(Throwable e) {

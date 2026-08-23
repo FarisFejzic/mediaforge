@@ -24,6 +24,10 @@ spring:
           initial-interval: 2000
           multiplier: 2
           max-interval: 10000
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
 jwt:
   secret: ${JWT_SECRET:d1552be79d689a9a2b61fbc8aa81c95d35e3b73e884677ef12cefaffec3bd181}
   expiration-seconds: ${JWT_EXPIRATION_SECONDS:3600}
@@ -52,3 +56,5 @@ mediaforge:
     dead-letter-exchange: ${RABBITMQ_DLX:mediaforge.jobs.dlx}
     dead-letter-queue: ${RABBITMQ_DLQ:jobs.dead-letter}
     dead-letter-routing-key: ${RABBITMQ_DLQ_ROUTING_KEY:job.dead-letter}
+  redis:
+    job-status-channel: ${REDIS_JOB_STATUS_CHANNEL:job-status}
