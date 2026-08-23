@@ -5,6 +5,7 @@ import com.mediaforge.common.domain.Upload;
 import com.mediaforge.common.domain.enums.AssetKind;
 import com.mediaforge.common.repository.AssetRepository;
 import com.mediaforge.common.repository.UploadRepository;
+import com.mediaforge.common.storage.StorageException;
 import com.mediaforge.common.storage.StorageService;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.stereotype.Component;

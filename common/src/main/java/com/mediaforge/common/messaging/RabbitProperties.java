@@ -21,6 +21,14 @@ public record RabbitProperties(
         String audioTranscodeRoutingKey,
         String deadLetterExchange,
         String deadLetterQueue,
-        String deadLetterRoutingKey
+        String deadLetterRoutingKey,
+        String thumbnailWaitQueue,
+        String posterWaitQueue,
+        String transcodeWaitQueue,
+        String previewWaitQueue,
+        String metadataWaitQueue,
+        String waveformWaitQueue,
+        String audioTranscodeWaitQueue,
+        long retryDelayMs
 ) {
 }

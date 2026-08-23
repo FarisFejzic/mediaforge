@@ -131,4 +131,48 @@ public class RabbitConfig {
                 .withArgument("x-dead-letter-routing-key", properties.deadLetterRoutingKey())
                 .build();
     }
+
+    private Queue waitQueue(String name, String returnRoutingKey) {
+        return QueueBuilder.durable(name)
+                .withArgument("x-message-ttl", (int) properties.retryDelayMs())
+                .withArgument("x-dead-letter-exchange", properties.exchange())
+                .withArgument("x-dead-letter-routing-key", returnRoutingKey)
+                .build();
+    }
+
+    @Bean
+    public Queue thumbnailWaitQueue() {
+        return waitQueue(properties.thumbnailWaitQueue(), properties.thumbnailRoutingKey());
+    }
+
+    @Bean
+    public Queue posterWaitQueue() {
+        return waitQueue(properties.posterWaitQueue(), properties.posterRoutingKey());
+    }
+
+    @Bean
+    public Queue transcodeWaitQueue() {
+        return waitQueue(properties.transcodeWaitQueue(), properties.transcodeRoutingKey());
+    }
+
+    @Bean
+    public Queue previewWaitQueue() {
+        return waitQueue(properties.previewWaitQueue(), properties.previewRoutingKey());
+    }
+
+    @Bean
+    public Queue metadataWaitQueue() {
+        return waitQueue(properties.metadataWaitQueue(), properties.metadataRoutingKey());
+    }
+
+    @Bean
+    public Queue waveformWaitQueue() {
+        return waitQueue(properties.waveformWaitQueue(), properties.waveformRoutingKey());
+    }
+
+    @Bean
+    public Queue audioTranscodeWaitQueue() {
+        return waitQueue(properties.audioTranscodeWaitQueue(), properties.audioTranscodeRoutingKey());
+    }
+
 }

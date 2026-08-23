@@ -52,7 +52,7 @@ public class Job {
         job.type = type;
         job.status = JobStatus.QUEUED;
         job.attempts = 0;
-        job.maxAttempts = 3;
+        job.maxAttempts = 5;
         return job;
     }
 

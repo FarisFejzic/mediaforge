@@ -29,6 +29,8 @@ import java.util.function.Consumer;
 @Component
 public class JobListener {
 
+    private static final int IMMEDIATE_RETRY_LIMIT = 2;
+
     private static final Logger log = LoggerFactory.getLogger(JobListener.class);
 
     private final JobRepository jobRepository;
@@ -40,6 +42,7 @@ public class JobListener {
     private final WaveformProcessor waveformProcessor;
     private final AudioTranscodeProcessor audioTranscodeProcessor;
     private final JobStatusPublisher jobStatusPublisher;
+    private final RetryPublisher retryPublisher;
 
     public JobListener(JobRepository jobRepository,
                        ThumbnailProcessor thumbnailProcessor,
@@ -49,7 +52,8 @@ public class JobListener {
                        PreviewProcessor previewProcessor,
                        WaveformProcessor waveformProcessor,
                        AudioTranscodeProcessor audioTranscodeProcessor,
-                       JobStatusPublisher jobStatusPublisher) {
+                       JobStatusPublisher jobStatusPublisher,
+                       RetryPublisher retryPublisher) {
         this.jobRepository = jobRepository;
         this.thumbnailProcessor = thumbnailProcessor;
         this.posterProcessor = posterProcessor;
@@ -59,6 +63,7 @@ public class JobListener {
         this.waveformProcessor = waveformProcessor;
         this.audioTranscodeProcessor = audioTranscodeProcessor;
         this.jobStatusPublisher = jobStatusPublisher;
+        this.retryPublisher = retryPublisher;
     }
 
     @RabbitListener(queues = "${mediaforge.rabbitmq.thumbnail-queue}")
@@ -114,15 +119,20 @@ public class JobListener {
                 markFailed(job, e);
                 throw new AmqpRejectAndDontRequeueException("Permanent failure: " + jobId, e);
             }
-            boolean lastAttempt = job.getAttempts() >= job.getMaxAttempts();
-            if (lastAttempt) {
-                log.error("Job failed (transient, exhausted): {}", jobId, e);
+
+            // transient — tiered retry driven by attempts count
+            int attempts = job.getAttempts();
+            if (attempts >= job.getMaxAttempts()) {
+                log.error("Job failed (transient, exhausted after {} attempts): {}", attempts, jobId, e);
                 markFailed(job, e);
+                throw new AmqpRejectAndDontRequeueException("Retries exhausted: " + jobId, e);
+            } else if (attempts <= IMMEDIATE_RETRY_LIMIT) {
+                log.warn("Job failed (transient), immediate retry (attempt {}): {}", attempts, jobId, e);
+                retryPublisher.requeueImmediate(jobId, job.getType());
             } else {
-                log.warn("Job failed (transient), retry {}/{}: {}",
-                        job.getAttempts(), job.getMaxAttempts(), jobId, e);
+                log.warn("Job failed (transient), delayed retry (attempt {}): {}", attempts, jobId, e);
+                retryPublisher.requeueDelayed(jobId, job.getType());
             }
-            throw new RuntimeException("Transient failure: " + jobId, e);
         }
     }
 
