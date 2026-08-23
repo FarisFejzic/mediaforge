@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -24,13 +25,13 @@ public class UploadController {
         this.uploadService = uploadService;
     }
 
-    @PostMapping
-    public ResponseEntity<UploadResponse> upload (
-            @RequestParam("file")MultipartFile file,
-            Authentication authentication){
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UploadResponse> upload(
+            @RequestParam("file") MultipartFile file,
+            Authentication authentication) {
         UUID userId = UUID.fromString(authentication.getName());
-        UploadResponse response = uploadService.upload(file,userId);
-        return  ResponseEntity.status(HttpStatus.CREATED).body(response);
+        UploadResponse response = uploadService.upload(file, userId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
