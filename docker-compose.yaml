@@ -76,6 +76,7 @@ services:
       MINIO_ENDPOINT: http://minio:9000
       MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:-minioadmin}
       MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      MINIO_PUBLIC_ENDPOINT: http://localhost:9000
       JWT_SECRET: ${JWT_SECRET:-d1552be79d689a9a2b61fbc8aa81c95d35e3b73e884677ef12cefaffec3bd181}
     ports:
       - "8080:8080"

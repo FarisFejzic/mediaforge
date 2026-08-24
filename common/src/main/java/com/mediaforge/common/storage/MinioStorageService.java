@@ -13,12 +13,18 @@ import java.util.concurrent.TimeUnit;
 public class MinioStorageService implements  StorageService{
 
     private final MinioClient client;
+    private final MinioClient presignClient;
     private final String bucket;
 
     public MinioStorageService(MinioProperties properties){
         this.client = MinioClient.builder()
                 .endpoint(properties.endpoint())
                 .credentials(properties.accessKey(), properties.secretKey())
+                .build();
+        this.presignClient = MinioClient.builder()
+                .endpoint(properties.publicEndpoint())
+                .credentials(properties.accessKey(), properties.secretKey())
+                .region("us-east-1")
                 .build();
         this.bucket = properties.bucket();
     }
@@ -78,12 +84,12 @@ public class MinioStorageService implements  StorageService{
     @Override
     public String presignedGetUrl(String key, int expirySeconds) {
         try {
-            return client.getPresignedObjectUrl(
+            return presignClient.getPresignedObjectUrl(   // ← was client
                     GetPresignedObjectUrlArgs.builder()
                             .method(Method.GET)
                             .bucket(bucket)
                             .object(key)
-                            .expiry(expirySeconds, TimeUnit.SECONDS)
+                            .expiry(expirySeconds)
                             .build());
         } catch (Exception e) {
             throw new StorageException("Failed to presign object: " + key, e);
