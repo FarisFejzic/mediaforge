@@ -44,3 +44,28 @@ jobs:
           format: table
           severity: HIGH,CRITICAL
           exit-code: 1
+  docker:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build API image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: api/Dockerfile
+          push: false
+          tags: mediaforge-api:ci
+
+      - name: Build Worker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: worker/Dockerfile
+          push: false
+          tags: mediaforge-worker:ci
