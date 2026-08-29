@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-image
+  namespace: mediaforge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker-image
+  template:
+    metadata:
+      labels:
+        app: worker-image
+    spec:
+      containers:
+        - name: worker
+          image: ghcr.io/farisfejzic/mediaforge-worker:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: WORKER_TYPE
+              value: image
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          envFrom:
+            - configMapRef:
+                name: mediaforge-config
+            - secretRef:
+                name: mediaforge-secret
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-video
+  namespace: mediaforge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker-video
+  template:
+    metadata:
+      labels:
+        app: worker-video
+    spec:
+      containers:
+        - name: worker
+          image: ghcr.io/farisfejzic/mediaforge-worker:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: WORKER_TYPE
+              value: video
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          envFrom:
+            - configMapRef:
+                name: mediaforge-config
+            - secretRef:
+                name: mediaforge-secret
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-audio
+  namespace: mediaforge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker-audio
+  template:
+    metadata:
+      labels:
+        app: worker-audio
+    spec:
+      containers:
+        - name: worker
+          image: ghcr.io/farisfejzic/mediaforge-worker:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: WORKER_TYPE
+              value: audio
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          envFrom:
+            - configMapRef:
+                name: mediaforge-config
+            - secretRef:
+                name: mediaforge-secret

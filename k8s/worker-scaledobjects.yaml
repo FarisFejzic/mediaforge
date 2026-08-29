@@ -1,0 +1,59 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: worker-image-scaledobject
+  namespace: mediaforge
+spec:
+  scaleTargetRef:
+    name: worker-image
+  minReplicaCount: 1
+  maxReplicaCount: 5
+  triggers:
+    - type: rabbitmq
+      metadata:
+        protocol: http
+        queueName: jobs.thumbnail
+        mode: QueueLength
+        value: "5"
+      authenticationRef:
+        name: keda-rabbitmq-auth
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: worker-video-scaledobject
+  namespace: mediaforge
+spec:
+  scaleTargetRef:
+    name: worker-video
+  minReplicaCount: 1
+  maxReplicaCount: 5
+  triggers:
+    - type: rabbitmq
+      metadata:
+        protocol: http
+        queueName: jobs.transcode
+        mode: QueueLength
+        value: "5"
+      authenticationRef:
+        name: keda-rabbitmq-auth
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: worker-audio-scaledobject
+  namespace: mediaforge
+spec:
+  scaleTargetRef:
+    name: worker-audio
+  minReplicaCount: 1
+  maxReplicaCount: 5
+  triggers:
+    - type: rabbitmq
+      metadata:
+        protocol: http
+        queueName: jobs.audio-transcode
+        mode: QueueLength
+        value: "5"
+      authenticationRef:
+        name: keda-rabbitmq-auth
