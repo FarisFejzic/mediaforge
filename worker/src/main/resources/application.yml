@@ -3,3 +3,6 @@ spring:
     import: classpath:common.yml
   application:
     name: worker
+
+server:
+  port: ${WORKER_PORT:8081}

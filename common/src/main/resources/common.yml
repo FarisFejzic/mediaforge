@@ -61,3 +61,11 @@ mediaforge:
     retry-delay-ms: ${RABBITMQ_RETRY_DELAY_MS:10000}
   redis:
     job-status-channel: ${REDIS_JOB_STATUS_CHANNEL:job-status}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
