@@ -16,7 +16,7 @@ spec:
       containers:
         - name: worker
           image: ghcr.io/farisfejzic/mediaforge-worker:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           env:
             - name: WORKER_TYPE
               value: image
@@ -51,7 +51,7 @@ spec:
       containers:
         - name: worker
           image: ghcr.io/farisfejzic/mediaforge-worker:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           env:
             - name: WORKER_TYPE
               value: video
@@ -86,7 +86,7 @@ spec:
       containers:
         - name: worker
           image: ghcr.io/farisfejzic/mediaforge-worker:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           env:
             - name: WORKER_TYPE
               value: audio
