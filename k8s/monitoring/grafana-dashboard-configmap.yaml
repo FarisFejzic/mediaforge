@@ -1,0 +1,100 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-mediaforge
+  namespace: monitoring
+data:
+  mediaforge-pipeline.json: |
+    {
+      "annotations": { "list": [] },
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "links": [],
+      "liveNow": false,
+      "panels": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "custom": { "drawStyle": "line", "lineInterpolation": "linear", "fillOpacity": 10 }, "unit": "reqps" }, "overrides": [] },
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+          "id": 1,
+          "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+          "targets": [
+            { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (type) (rate(mediaforge_jobs_total{outcome=\"completed\"}[5m]))", "legendFormat": "{{type}}", "refId": "A" }
+          ],
+          "title": "Jobs Completed/sec by Type",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "short", "color": { "mode": "palette-classic" } }, "overrides": [] },
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+          "id": 2,
+          "options": { "displayMode": "gradient", "orientation": "horizontal", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+          "targets": [
+            { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (type) (mediaforge_jobs_total{outcome=\"completed\"})", "legendFormat": "{{type}}", "refId": "A" }
+          ],
+          "title": "Total Jobs Completed by Type",
+          "type": "bargauge"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "short", "color": { "mode": "palette-classic" } }, "overrides": [] },
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 8 },
+          "id": 3,
+          "options": { "legend": { "displayMode": "list", "placement": "right", "values": ["value"] }, "pieType": "pie", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+          "targets": [
+            { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (outcome) (mediaforge_jobs_total)", "legendFormat": "{{outcome}}", "refId": "A" }
+          ],
+          "title": "Jobs by Outcome",
+          "type": "piechart"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "custom": { "drawStyle": "line", "lineInterpolation": "linear", "fillOpacity": 10 }, "unit": "s" }, "overrides": [] },
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 8 },
+          "id": 4,
+          "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+          "targets": [
+            { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (type) (rate(mediaforge_job_duration_seconds_sum[5m])) / sum by (type) (rate(mediaforge_job_duration_seconds_count[5m]))", "legendFormat": "{{type}}", "refId": "A" }
+          ],
+          "title": "Avg Processing Time by Type",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "custom": { "drawStyle": "line", "lineInterpolation": "linear", "fillOpacity": 10 }, "unit": "s" }, "overrides": [] },
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 8 },
+          "id": 5,
+          "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+          "targets": [
+            { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "histogram_quantile(0.95, sum by (type, le) (rate(mediaforge_job_duration_seconds_bucket[5m])))", "legendFormat": "{{type}}", "refId": "A" }
+          ],
+          "title": "Processing Time p95 by Type",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "custom": { "drawStyle": "line", "lineInterpolation": "stepAfter", "fillOpacity": 20 }, "unit": "short" }, "overrides": [] },
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
+          "id": 6,
+          "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+          "targets": [
+            { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "rabbitmq_queue_messages_ready{queue=~\"jobs\\\\..*\"}", "legendFormat": "{{queue}}", "refId": "A" }
+          ],
+          "title": "Queue Depth (ready messages)",
+          "type": "timeseries"
+        }
+      ],
+      "refresh": "10s",
+      "schemaVersion": 39,
+      "tags": ["mediaforge"],
+      "templating": { "list": [] },
+      "time": { "from": "now-30m", "to": "now" },
+      "timepicker": {},
+      "timezone": "browser",
+      "title": "MediaForge Pipeline",
+      "uid": "mediaforge-pipeline",
+      "version": 1,
+      "weekStart": ""
+    }
