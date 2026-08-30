@@ -72,3 +72,6 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        mediaforge.job.duration: true
