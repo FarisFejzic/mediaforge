@@ -2,6 +2,7 @@ package com.mediaforge.worker;
 
 import com.mediaforge.common.messaging.JobMessage;
 import com.mediaforge.common.repository.JobRepository;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
@@ -17,10 +18,11 @@ public class AudioJobListener extends AbstractJobListener {
     public AudioJobListener(JobRepository jobRepository,
                             JobStatusPublisher jobStatusPublisher,
                             RetryPublisher retryPublisher,
+                            MeterRegistry meterRegistry,
                             MetadataProcessor metadataProcessor,
                             WaveformProcessor waveformProcessor,
                             AudioTranscodeProcessor audioTranscodeProcessor) {
-        super(jobRepository, jobStatusPublisher, retryPublisher);
+        super(jobRepository, jobStatusPublisher, retryPublisher, meterRegistry);
         this.metadataProcessor = metadataProcessor;
         this.waveformProcessor = waveformProcessor;
         this.audioTranscodeProcessor = audioTranscodeProcessor;
