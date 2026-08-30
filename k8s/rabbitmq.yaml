@@ -12,6 +12,10 @@ spec:
     metadata:
       labels:
         app: rabbitmq
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "15692"
+        prometheus.io/path: "/metrics/per-object"
     spec:
       containers:
         - name: rabbitmq
@@ -19,6 +23,7 @@ spec:
           ports:
             - containerPort: 5672
             - containerPort: 15672
+            - containerPort: 15692
           env:
             - name: RABBITMQ_DEFAULT_USER
               value: mediaforge
