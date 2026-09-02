@@ -2,6 +2,7 @@ package com.mediaforge.worker;
 
 import com.mediaforge.common.messaging.JobMessage;
 import com.mediaforge.common.repository.JobRepository;
+import com.mediaforge.common.repository.UploadRepository;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -17,8 +18,9 @@ public class ImageJobListener extends AbstractJobListener {
                             JobStatusPublisher jobStatusPublisher,
                             RetryPublisher retryPublisher,
                             MeterRegistry meterRegistry,
+                            UploadRepository uploadRepository,
                             ThumbnailProcessor thumbnailProcessor) {
-        super(jobRepository, jobStatusPublisher, retryPublisher, meterRegistry);
+        super(jobRepository, jobStatusPublisher, retryPublisher, meterRegistry, uploadRepository);
         this.thumbnailProcessor = thumbnailProcessor;
     }
 

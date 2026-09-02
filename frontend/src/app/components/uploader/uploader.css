@@ -1,0 +1,38 @@
+.dropzone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 28px;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 14px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  margin-bottom: 20px;
+}
+
+.dropzone.drag-over {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+
+.dropzone.uploading {
+  opacity: 0.7;
+}
+
+.pick {
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.error {
+  padding: 9px 11px;
+  background: color-mix(in srgb, var(--status-failed) 12%, transparent);
+  color: var(--status-failed);
+  border-radius: 6px;
+  font-size: 13px;
+  margin-bottom: 20px;
+}

@@ -3,6 +3,8 @@ package com.mediaforge.worker;
 import com.mediaforge.common.domain.Job;
 import com.mediaforge.common.domain.enums.JobStatus;
 import com.mediaforge.common.repository.JobRepository;
+import com.mediaforge.common.repository.UploadRepository;
+import com.mediaforge.common.domain.enums.UploadStatus;
 import com.mediaforge.common.storage.StorageException;
 import com.mediaforge.worker.ffmpeg.FfmpegException;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -11,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -23,15 +26,18 @@ public abstract class AbstractJobListener {
     protected final JobStatusPublisher jobStatusPublisher;
     protected final RetryPublisher retryPublisher;
     protected final MeterRegistry meterRegistry;
+    protected final UploadRepository uploadRepository;
 
     protected AbstractJobListener(JobRepository jobRepository,
                                   JobStatusPublisher jobStatusPublisher,
                                   RetryPublisher retryPublisher,
-                                  MeterRegistry meterRegistry) {
+                                  MeterRegistry meterRegistry,
+                                  UploadRepository uploadRepository) {
         this.jobRepository = jobRepository;
         this.jobStatusPublisher = jobStatusPublisher;
         this.retryPublisher = retryPublisher;
         this.meterRegistry = meterRegistry;
+        this.uploadRepository = uploadRepository;
     }
 
     protected void runJob(UUID jobId, Consumer<Job> processor) {
@@ -52,6 +58,7 @@ public abstract class AbstractJobListener {
         job.setAttempts(job.getAttempts() + 1);
         jobRepository.save(job);
         jobStatusPublisher.publish(job);
+        updateUploadStatus(job.getUploadId());          // ← ADD 1: upload → PROCESSING when a job starts
 
         try {
             meterRegistry.timer("mediaforge.job.duration", "type", job.getType().name())
@@ -61,12 +68,14 @@ public abstract class AbstractJobListener {
             jobRepository.save(job);
             jobStatusPublisher.publish(job);
             countJob(job, "completed");
+            updateUploadStatus(job.getUploadId());       // ← ADD 2: re-evaluate after a job completes
             log.info("Completed job: {}", jobId);
         } catch (Exception e) {
             if (isPermanent(e)) {
                 log.error("Job failed (permanent): {}", jobId, e);
                 markFailed(job, e);
                 countJob(job, "failed");
+                updateUploadStatus(job.getUploadId());   // ← ADD 3: re-evaluate after a permanent failure
                 throw new AmqpRejectAndDontRequeueException("Permanent failure: " + jobId, e);
             }
             int attempts = job.getAttempts();
@@ -74,6 +83,7 @@ public abstract class AbstractJobListener {
                 log.error("Job failed (transient, exhausted after {} attempts): {}", attempts, jobId, e);
                 markFailed(job, e);
                 countJob(job, "exhausted");
+                updateUploadStatus(job.getUploadId());   // ← ADD 4: re-evaluate after retries exhausted
                 throw new AmqpRejectAndDontRequeueException("Retries exhausted: " + jobId, e);
             } else if (attempts <= IMMEDIATE_RETRY_LIMIT) {
                 log.warn("Job failed (transient), immediate retry (attempt {}): {}", attempts, jobId, e);
@@ -86,7 +96,6 @@ public abstract class AbstractJobListener {
             }
         }
     }
-
     private void markFailed(Job job, Throwable e) {
         job.setStatus(JobStatus.FAILED);
         job.setError(e.getMessage());
@@ -109,5 +118,29 @@ public abstract class AbstractJobListener {
         meterRegistry.counter("mediaforge.jobs",
                 "type", job.getType().name(),
                 "outcome", outcome).increment();
+    }
+
+    protected void updateUploadStatus(UUID uploadId) {
+        List<Job> jobs = jobRepository.findByUploadId(uploadId);
+        if (jobs.isEmpty()) return;
+
+        UploadStatus newStatus;
+        boolean anyFailed = jobs.stream().anyMatch(j -> j.getStatus() == JobStatus.FAILED);
+        boolean allCompleted = jobs.stream().allMatch(j -> j.getStatus() == JobStatus.COMPLETED);
+
+        if (anyFailed) {
+            newStatus = UploadStatus.FAILED;
+        } else if (allCompleted) {
+            newStatus = UploadStatus.DONE;
+        } else {
+            newStatus = UploadStatus.PROCESSING;
+        }
+
+        uploadRepository.findById(uploadId).ifPresent(upload -> {
+            if (upload.getStatus() != newStatus) {
+                upload.setStatus(newStatus);
+                uploadRepository.save(upload);
+            }
+        });
     }
 }

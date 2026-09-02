@@ -1,0 +1,25 @@
+<div class="auth-card">
+  <h1>Sign in</h1>
+
+  @if (error()) {
+    <div class="error">{{ error() }}</div>
+  }
+
+  <label>
+    Email
+    <input type="email" [(ngModel)]="email" name="email" autocomplete="email" />
+  </label>
+
+  <label>
+    Password
+    <input type="password" [(ngModel)]="password" name="password" autocomplete="current-password" />
+  </label>
+
+  <button (click)="submit()" [disabled]="loading()">
+    {{ loading() ? 'Signing in…' : 'Sign in' }}
+  </button>
+
+  <p class="switch">
+    No account? <a routerLink="/register">Register</a>
+  </p>
+</div>

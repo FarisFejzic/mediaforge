@@ -1,0 +1,7 @@
+<button class="theme-toggle" (click)="toggle()" [attr.aria-label]="'Switch to ' + (theme() === 'light' ? 'dark' : 'light') + ' theme'">
+  @if (theme() === 'light') {
+    <span>🌙</span>
+  } @else {
+    <span>☀️</span>
+  }
+</button>

@@ -1,0 +1,25 @@
+<div class="auth-card">
+  <h1>Create account</h1>
+
+  @if (error()) {
+    <div class="error">{{ error() }}</div>
+  }
+
+  <label>
+    Email
+    <input type="email" [(ngModel)]="email" name="email" autocomplete="email" />
+  </label>
+
+  <label>
+    Password
+    <input type="password" [(ngModel)]="password" name="password" autocomplete="new-password" />
+  </label>
+
+  <button (click)="submit()" [disabled]="loading()">
+    {{ loading() ? 'Creating…' : 'Create account' }}
+  </button>
+
+  <p class="switch">
+    Already have an account? <a routerLink="/login">Sign in</a>
+  </p>
+</div>

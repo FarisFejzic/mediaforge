@@ -1,0 +1,22 @@
+<div
+  class="dropzone"
+  [class.drag-over]="dragOver()"
+  [class.uploading]="uploading()"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave()"
+  (drop)="onDrop($event)">
+
+  @if (uploading()) {
+    <span>Uploading…</span>
+  } @else {
+    <span>Drag a file here, or</span>
+    <label class="pick">
+      browse
+      <input type="file" (change)="onFileSelected($event)" hidden />
+    </label>
+  }
+</div>
+
+@if (error()) {
+  <div class="error">{{ error() }}</div>
+}

@@ -1,0 +1,26 @@
+<div class="dashboard">
+  <div class="dash-header">
+    <h1>Uploads</h1>
+  </div>
+
+  <app-uploader (uploaded)="onUploaded($event)" />
+
+  @if (loading()) {
+    <p class="muted">Loading…</p>
+  } @else if (error()) {
+    <div class="error">{{ error() }}</div>
+  } @else if (uploads().length === 0) {
+    <p class="muted">No uploads yet. Upload a file to get started.</p>
+  } @else {
+    <div class="upload-list">
+      @for (upload of uploads(); track upload.id) {
+        <div class="upload-row">
+          <span class="name">{{ upload.originalName }}</span>
+          <span class="type">{{ upload.mediaType }}</span>
+          <span class="status status-{{ upload.status.toLowerCase() }}">{{ upload.status }}</span>
+          <span class="date">{{ upload.createdAt | date:'short' }}</span>
+        </div>
+      }
+    </div>
+  }
+</div>
