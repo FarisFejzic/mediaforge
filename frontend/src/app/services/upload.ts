@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Upload, Page } from '../models/upload';
+import { Upload, Page, UploadDetail } from '../models/upload';
 
 @Injectable({ providedIn: 'root' })
 export class UploadService {
@@ -15,5 +15,9 @@ export class UploadService {
     const form = new FormData();
     form.append('file', file);
     return this.http.post<Upload>('/api/uploads', form);
+  }
+
+  getById(id: string): Observable<UploadDetail> {
+    return this.http.get<UploadDetail>(`/api/uploads/${id}`);
   }
 }

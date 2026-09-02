@@ -21,10 +21,11 @@ public class VideoJobListener extends AbstractJobListener {
                             RetryPublisher retryPublisher,
                             MeterRegistry meterRegistry,
                             UploadRepository uploadRepository,
+                            UploadStatusPublisher uploadStatusPublisher,
                             VideoTranscodeProcessor videoTranscodeProcessor,
                             PosterProcessor posterProcessor,
                             PreviewProcessor previewProcessor) {
-        super(jobRepository, jobStatusPublisher, retryPublisher, meterRegistry, uploadRepository);
+        super(jobRepository, jobStatusPublisher, retryPublisher, meterRegistry, uploadRepository, uploadStatusPublisher);
         this.videoTranscodeProcessor = videoTranscodeProcessor;
         this.posterProcessor = posterProcessor;
         this.previewProcessor = previewProcessor;

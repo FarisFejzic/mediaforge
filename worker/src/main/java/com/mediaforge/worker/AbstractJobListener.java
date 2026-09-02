@@ -27,17 +27,20 @@ public abstract class AbstractJobListener {
     protected final RetryPublisher retryPublisher;
     protected final MeterRegistry meterRegistry;
     protected final UploadRepository uploadRepository;
+    protected final UploadStatusPublisher uploadStatusPublisher;
 
     protected AbstractJobListener(JobRepository jobRepository,
                                   JobStatusPublisher jobStatusPublisher,
                                   RetryPublisher retryPublisher,
                                   MeterRegistry meterRegistry,
-                                  UploadRepository uploadRepository) {
+                                  UploadRepository uploadRepository,
+                                  UploadStatusPublisher uploadStatusPublisher) {
         this.jobRepository = jobRepository;
         this.jobStatusPublisher = jobStatusPublisher;
         this.retryPublisher = retryPublisher;
         this.meterRegistry = meterRegistry;
         this.uploadRepository = uploadRepository;
+        this.uploadStatusPublisher = uploadStatusPublisher;
     }
 
     protected void runJob(UUID jobId, Consumer<Job> processor) {
@@ -140,6 +143,7 @@ public abstract class AbstractJobListener {
             if (upload.getStatus() != newStatus) {
                 upload.setStatus(newStatus);
                 uploadRepository.save(upload);
+                uploadStatusPublisher.publish(upload);
             }
         });
     }

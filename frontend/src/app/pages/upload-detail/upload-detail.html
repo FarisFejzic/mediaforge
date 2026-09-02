@@ -1,0 +1,47 @@
+<div class="detail">
+  <a routerLink="/dashboard" class="back">← Back to uploads</a>
+
+  @if (loading()) {
+    <p class="muted">Loading…</p>
+  } @else if (error()) {
+    <div class="error">{{ error() }}</div>
+  } @else if (detail(); as d) {
+    <div class="detail-header">
+      <h1>{{ d.originalName }}</h1>
+      <span class="status status-{{ d.status.toLowerCase() }}">{{ d.status }}</span>
+    </div>
+    <div class="meta">
+      <span>{{ d.mediaType }}</span>
+      <span>{{ d.sizeBytes }} bytes</span>
+      <span>{{ d.createdAt | date:'medium' }}</span>
+    </div>
+
+    <h2>Jobs</h2>
+    <div class="job-list">
+      @for (job of d.jobs; track job.id) {
+        <div class="job-row">
+          <span class="job-type">{{ job.type }}</span>
+          <span class="status status-{{ job.status.toLowerCase() }}">{{ job.status }}</span>
+          @if (job.error) {
+            <span class="job-error">{{ job.error }}</span>
+          }
+        </div>
+      }
+    </div>
+
+    <h2>Assets</h2>
+    @if (d.assets.length === 0) {
+      <p class="muted">No assets yet.</p>
+    } @else {
+      <div class="asset-list">
+        @for (asset of d.assets; track asset.id) {
+          <div class="asset-row">
+            <span class="asset-kind">{{ asset.kind }}</span>
+            <span class="asset-size">{{ asset.sizeBytes }} bytes</span>
+            <a [href]="downloadUrl(asset.id)" target="_blank" class="download">Download</a>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>

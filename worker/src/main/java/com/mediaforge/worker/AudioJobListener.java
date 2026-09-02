@@ -21,10 +21,11 @@ public class AudioJobListener extends AbstractJobListener {
                             RetryPublisher retryPublisher,
                             MeterRegistry meterRegistry,
                             UploadRepository uploadRepository,
+                            UploadStatusPublisher uploadStatusPublisher,
                             MetadataProcessor metadataProcessor,
                             WaveformProcessor waveformProcessor,
                             AudioTranscodeProcessor audioTranscodeProcessor) {
-        super(jobRepository, jobStatusPublisher, retryPublisher, meterRegistry, uploadRepository);
+        super(jobRepository, jobStatusPublisher, retryPublisher, meterRegistry, uploadRepository,uploadStatusPublisher);
         this.metadataProcessor = metadataProcessor;
         this.waveformProcessor = waveformProcessor;
         this.audioTranscodeProcessor = audioTranscodeProcessor;

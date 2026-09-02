@@ -3,10 +3,11 @@ import { DatePipe } from '@angular/common';
 import { UploadService } from '../../services/upload';
 import { Upload } from '../../models/upload';
 import { Uploader } from '../../components/uploader/uploader';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [DatePipe, Uploader],
+  imports: [DatePipe, Uploader, RouterLink],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })

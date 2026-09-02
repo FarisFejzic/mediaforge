@@ -14,12 +14,12 @@
   } @else {
     <div class="upload-list">
       @for (upload of uploads(); track upload.id) {
-        <div class="upload-row">
+        <a class="upload-row" [routerLink]="['/uploads', upload.id]">
           <span class="name">{{ upload.originalName }}</span>
           <span class="type">{{ upload.mediaType }}</span>
           <span class="status status-{{ upload.status.toLowerCase() }}">{{ upload.status }}</span>
           <span class="date">{{ upload.createdAt | date:'short' }}</span>
-        </div>
+        </a>
       }
     </div>
   }

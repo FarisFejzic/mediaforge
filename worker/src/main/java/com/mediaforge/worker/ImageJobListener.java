@@ -19,8 +19,9 @@ public class ImageJobListener extends AbstractJobListener {
                             RetryPublisher retryPublisher,
                             MeterRegistry meterRegistry,
                             UploadRepository uploadRepository,
+                            UploadStatusPublisher uploadStatusPublisher,
                             ThumbnailProcessor thumbnailProcessor) {
-        super(jobRepository, jobStatusPublisher, retryPublisher, meterRegistry, uploadRepository);
+        super(jobRepository, jobStatusPublisher, retryPublisher, meterRegistry, uploadRepository, uploadStatusPublisher);
         this.thumbnailProcessor = thumbnailProcessor;
     }
 

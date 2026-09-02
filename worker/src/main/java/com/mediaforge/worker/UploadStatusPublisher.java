@@ -1,33 +1,33 @@
 package com.mediaforge.worker;
 
-import tools.jackson.databind.ObjectMapper;
-import com.mediaforge.common.domain.Job;
-import com.mediaforge.common.messaging.JobStatusEvent;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mediaforge.common.domain.Upload;
 import com.mediaforge.common.messaging.RedisProperties;
+import com.mediaforge.common.messaging.UploadStatusEvent;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JobStatusPublisher {
+public class UploadStatusPublisher {
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final RedisProperties properties;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public JobStatusPublisher(RedisTemplate<String, Object> redisTemplate,
-                              RedisProperties properties) {
+    public UploadStatusPublisher(RedisTemplate<String, Object> redisTemplate,
+                                 RedisProperties properties) {
         this.redisTemplate = redisTemplate;
         this.properties = properties;
     }
 
-    public void publish(Job job) {
+    public void publish(Upload upload) {
         try {
-            JobStatusEvent event = new JobStatusEvent(
-                    "JOB", job.getId(), job.getUploadId(), job.getType(), job.getStatus());
+            UploadStatusEvent event = new UploadStatusEvent(
+                    "UPLOAD", upload.getId(), upload.getStatus());
             String json = objectMapper.writeValueAsString(event);
             redisTemplate.convertAndSend(properties.jobStatusChannel(), json);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to publish job status event", e);
+            throw new RuntimeException("Failed to publish upload status event", e);
         }
     }
 }
