@@ -1,7 +1,12 @@
 <div class="app-shell">
   <header class="app-header">
     <span class="brand">MediaForge</span>
-    <app-theme-toggle />
+    <div class="header-actions">
+      @if (auth.isLoggedIn()) {
+        <button class="logout-btn" (click)="logout()">Log out</button>
+      }
+      <app-theme-toggle />
+    </div>
   </header>
   <main class="app-main">
     <router-outlet />

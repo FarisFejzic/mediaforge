@@ -25,3 +25,23 @@
   flex: 1;
   padding: 24px;
 }
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logout-btn {
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.logout-btn:hover {
+  background: var(--surface-hover);
+}
