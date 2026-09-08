@@ -1,17 +1,60 @@
 .theme-toggle {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
+  padding: 0;
+  border: none;
+  background: none;
   cursor: pointer;
-  font-size: 15px;
-  transition: background 0.15s ease;
 }
 
-.theme-toggle:hover {
-  background: var(--surface-hover);
+.track {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 52px;
+  height: 28px;
+  padding: 0 6px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface-sunken);
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.theme-toggle:hover .track {
+  border-color: var(--border-strong);
+}
+
+.icon {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  z-index: 1;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+/* sun active in light, moon active in dark */
+.icon-sun { color: var(--status-processing); opacity: 1; }
+.icon-moon { color: var(--text-faint); opacity: 0.5; }
+
+.theme-toggle.is-dark .icon-sun { color: var(--text-faint); opacity: 0.5; }
+.theme-toggle.is-dark .icon-moon { color: var(--accent); opacity: 1; }
+
+/* the sliding knob */
+.knob {
+  position: absolute;
+  top: 50%;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  transform: translateY(-50%);
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-toggle.is-dark .knob {
+  transform: translateY(-50%) translateX(24px);
 }

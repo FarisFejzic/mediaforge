@@ -43,7 +43,7 @@
             <span class="asset-size">{{ asset.sizeBytes }} bytes</span>
             <div class="asset-actions">
               @if (asset.viewUrl) {
-                <button class="action" (click)="openPreview(asset)">Preview</button>
+                <button class="action primary" (click)="openPreview(asset)">Preview</button>
               }
               <button class="action" (click)="download(asset.id)">Download</button>
             </div>
