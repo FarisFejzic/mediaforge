@@ -1,0 +1,19 @@
+<div class="modal-backdrop" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="onClose()" aria-label="Close">✕</button>
+
+    @switch (mediaType()) {
+      @case ('image') {
+        <img [src]="asset().viewUrl" [alt]="asset().kind" class="preview-media" />
+      }
+      @case ('video') {
+        <video [src]="asset().viewUrl!" controls class="preview-media"></video>
+      }
+      @case ('audio') {
+        <audio [src]="asset().viewUrl!" controls class="preview-audio"></audio>
+      }
+    }
+
+    <div class="modal-caption">{{ asset().kind }}</div>
+  </div>
+</div>

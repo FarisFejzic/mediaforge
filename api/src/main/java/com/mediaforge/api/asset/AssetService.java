@@ -38,7 +38,7 @@ public class AssetService {
         }
 
         String url = storageService.presignedGetUrl(
-                asset.getStorageKey(), DOWNLOAD_EXPIRY_SECONDS);
+                asset.getStorageKey(), DOWNLOAD_EXPIRY_SECONDS, true);
 
         return new DownloadResponse(url, DOWNLOAD_EXPIRY_SECONDS);
     }

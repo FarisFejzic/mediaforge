@@ -33,12 +33,20 @@
     @if (d.assets.length === 0) {
       <p class="muted">No assets yet.</p>
     } @else {
+      @if (previewAsset(); as asset) {
+        <app-asset-preview-modal [asset]="asset" (close)="closePreview()" />
+      }
       <div class="asset-list">
         @for (asset of d.assets; track asset.id) {
           <div class="asset-row">
             <span class="asset-kind">{{ asset.kind }}</span>
             <span class="asset-size">{{ asset.sizeBytes }} bytes</span>
-            <a [href]="downloadUrl(asset.id)" target="_blank" class="download">Download</a>
+            <div class="asset-actions">
+              @if (asset.viewUrl) {
+                <button class="action" (click)="openPreview(asset)">Preview</button>
+              }
+              <button class="action" (click)="download(asset.id)">Download</button>
+            </div>
           </div>
         }
       </div>

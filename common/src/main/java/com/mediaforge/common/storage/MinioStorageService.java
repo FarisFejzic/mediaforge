@@ -7,6 +7,8 @@ import org.bouncycastle.util.StoreException;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -82,14 +84,23 @@ public class MinioStorageService implements  StorageService{
     }
 
     @Override
-    public String presignedGetUrl(String key, int expirySeconds) {
+    public String presignedGetUrl(String key, int expirySeconds, boolean attachment) {
         try {
-            return presignClient.getPresignedObjectUrl(   // ← was client
+            Map<String, String> extraQueryParams = new HashMap<>();
+            if (attachment) {
+                // filename = the last path segment of the key
+                String filename = key.substring(key.lastIndexOf('/') + 1);
+                extraQueryParams.put("response-content-disposition",
+                        "attachment; filename=\"" + filename + "\"");
+            }
+
+            return presignClient.getPresignedObjectUrl(
                     GetPresignedObjectUrlArgs.builder()
                             .method(Method.GET)
                             .bucket(bucket)
                             .object(key)
                             .expiry(expirySeconds)
+                            .extraQueryParams(extraQueryParams)
                             .build());
         } catch (Exception e) {
             throw new StorageException("Failed to presign object: " + key, e);

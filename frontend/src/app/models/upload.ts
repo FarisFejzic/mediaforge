@@ -41,6 +41,7 @@ export interface Asset {
   kind: string;
   sizeBytes: number;
   createdAt: string;
+  viewUrl: string | null;
 }
 
 export interface UploadDetail extends Upload {

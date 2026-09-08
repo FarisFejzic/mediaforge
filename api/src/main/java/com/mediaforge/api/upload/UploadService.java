@@ -8,6 +8,7 @@ import com.mediaforge.api.upload.dto.UploadResponse;
 import com.mediaforge.common.domain.Asset;
 import com.mediaforge.common.domain.Job;
 import com.mediaforge.common.domain.Upload;
+import com.mediaforge.common.domain.enums.AssetKind;
 import com.mediaforge.common.domain.enums.JobType;
 import com.mediaforge.common.domain.enums.MediaType;
 import com.mediaforge.common.repository.AssetRepository;
@@ -27,6 +28,8 @@ import java.util.function.Consumer;
 
 @Service
 public class UploadService {
+
+    private static final int VIEW_EXPIRY_SECONDS = 300;
 
     private final StorageService storageService;
     private final UploadRepository uploadRepository;
@@ -155,13 +158,22 @@ public class UploadService {
     }
 
     private AssetResponse toAssetResponse(Asset asset) {
+        String viewUrl = isViewable(asset.getKind())
+                ? storageService.presignedGetUrl(asset.getStorageKey(), VIEW_EXPIRY_SECONDS, false)
+                : null;
+
         return new AssetResponse(
                 asset.getId(),
                 asset.getJobId(),
                 asset.getKind(),
                 asset.getSizeBytes(),
-                asset.getCreatedAt()
+                asset.getCreatedAt(),
+                viewUrl
         );
+    }
+
+    private boolean isViewable(AssetKind kind) {
+        return kind != AssetKind.METADATA;
     }
 
     public UploadDetailResponse getDetail(UUID uploadId, UUID userId) {

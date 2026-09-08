@@ -10,5 +10,5 @@ public interface StorageService {
 
     void delete(String key);
 
-    String presignedGetUrl(String key, int expirySeconds);
+    String presignedGetUrl(String key, int expirySeconds, boolean attachment);
 }

@@ -10,6 +10,7 @@ public record AssetResponse(
         UUID jobId,
         AssetKind kind,
         long sizeBytes,
-        OffsetDateTime createdAt
+        OffsetDateTime createdAt,
+        String viewUrl
 ) {
 }

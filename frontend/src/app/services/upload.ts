@@ -20,4 +20,8 @@ export class UploadService {
   getById(id: string): Observable<UploadDetail> {
     return this.http.get<UploadDetail>(`/api/uploads/${id}`);
   }
+
+  getDownloadUrl(assetId: string): Observable<{ url: string; expiresIn: number }> {
+    return this.http.get<{ url: string; expiresIn: number }>(`/api/assets/${assetId}/download`);
+  }
 }

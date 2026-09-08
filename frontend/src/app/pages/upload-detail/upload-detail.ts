@@ -4,11 +4,12 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { UploadService } from '../../services/upload';
 import { WebSocketService } from '../../services/websocket';
-import { UploadDetail, Job } from '../../models/upload';
+import { UploadDetail, Job, Asset } from '../../models/upload';
+import { AssetPreviewModal } from '../../components/asset-preview-modal/asset-preview-modal';
 
 @Component({
   selector: 'app-upload-detail',
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe, RouterLink, AssetPreviewModal],
   templateUrl: './upload-detail.html',
   styleUrl: './upload-detail.css'
 })
@@ -20,6 +21,7 @@ export class UploadDetailPage implements OnInit, OnDestroy {
   protected detail = signal<UploadDetail | null>(null);
   protected loading = signal(true);
   protected error = signal<string | null>(null);
+  protected previewAsset = signal<Asset | null>(null);   // ← currently-previewed asset
 
   private wsSub?: Subscription;
   private uploadId!: string;
@@ -65,7 +67,22 @@ export class UploadDetailPage implements OnInit, OnDestroy {
     });
   }
 
-  protected downloadUrl(assetId: string): string {
-    return `/api/assets/${assetId}/download`;
+  protected download(assetId: string) {
+    this.uploadService.getDownloadUrl(assetId).subscribe({
+      next: (res) => {
+        window.open(res.url, '_blank');
+      },
+      error: () => {
+        this.error.set('Download failed.');
+      }
+    });
+  }
+
+  openPreview(asset: Asset) {
+    this.previewAsset.set(asset);
+  }
+
+  closePreview() {
+    this.previewAsset.set(null);
   }
 }
