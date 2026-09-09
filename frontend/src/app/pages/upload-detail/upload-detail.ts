@@ -65,6 +65,22 @@ export class UploadDetailPage implements OnInit, OnDestroy {
         return { ...current, jobs };
       }
     });
+
+    // a job just completed → its asset now exists; refetch to show it live
+    if (event.eventType !== 'UPLOAD' && event.status === 'COMPLETED') {
+      this.refreshAssets();
+    }
+  }
+
+  private refreshAssets() {
+    this.uploadService.getById(this.uploadId).subscribe({
+      next: (fresh) => {
+        this.detail.update(current =>
+          current ? { ...current, assets: fresh.assets } : fresh
+        );
+      },
+      error: () => { /* keep existing assets if the refetch fails */ }
+    });
   }
 
   protected download(assetId: string) {
