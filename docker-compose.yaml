@@ -124,6 +124,9 @@ services:
     image: mediaforge-frontend:dev
     ports:
       - "8090:80"
+    environment:
+      NGINX_RESOLVER: "127.0.0.11"
+      API_UPSTREAM: "http://api:8080"
     depends_on:
       - api
 
