@@ -117,6 +117,16 @@ services:
       minio:
         condition: service_healthy
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: mediaforge-frontend:dev
+    ports:
+      - "8090:80"
+    depends_on:
+      - api
+
 volumes:
   pgdata:
   miniodata:
