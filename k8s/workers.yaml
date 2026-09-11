@@ -63,13 +63,15 @@ spec:
           env:
             - name: WORKER_TYPE
               value: video
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Xmx640m"
           resources:
             requests:
               cpu: 250m
               memory: 512Mi
             limits:
-              cpu: "1"
-              memory: 1Gi
+              cpu: "2"
+              memory: 2Gi
           envFrom:
             - configMapRef:
                 name: mediaforge-config
