@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+  - frontend-ingress.yaml
+
+patches:
+  - path: config-patch.yaml
+    target:
+      kind: ConfigMap
+      name: mediaforge-config
+  - path: minio-nodeport.yaml
+    target:
+      kind: Service
+      name: minio
+  - path: frontend-patch.yaml
+    target:
+      kind: Deployment
+      name: frontend
